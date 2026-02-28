@@ -1,13 +1,233 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Google AI Studio App</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
-</html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Games - Unblocked</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.446.0/lucide.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .game-card:hover .play-overlay { opacity: 1; }
+        .game-card:hover img { transform: scale(1.1); }
+        .game-card:hover h3 { color: #10b981; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body class="bg-[#0a0a0a] text-zinc-100 min-h-screen selection:bg-emerald-500/30">
+    <!-- Header -->
+    <header class="sticky top-0 z-50 border-b border-white/5 bg-black/80 backdrop-blur-xl">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2 cursor-pointer group" id="logo">
+                <div class="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.3)] group-hover:scale-110 transition-transform">
+                    <i data-lucide="gamepad-2" class="w-5 h-5 text-black"></i>
+                </div>
+                <h1 class="text-xl font-bold tracking-tight bg-gradient-to-r from-white to-zinc-400 bg-clip-text text-transparent">
+                    Nexus Games
+                </h1>
+            </div>
 
+            <div id="search-container" class="relative max-w-md w-full ml-4">
+                <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500"></i>
+                <input
+                    type="text"
+                    id="search-input"
+                    placeholder="Search games..."
+                    class="w-full bg-zinc-900/50 border border-white/10 rounded-full py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all"
+                >
+            </div>
+
+            <button id="back-btn" class="hidden flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 transition-colors text-sm font-medium">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                Back to Library
+            </button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Library View -->
+        <div id="library-view">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold mb-2">Game Library</h2>
+                <p class="text-zinc-500">Explore our collection of unblocked web games.</p>
+            </div>
+            <div id="games-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Games will be injected here -->
+            </div>
+            <div id="no-results" class="hidden text-center py-20">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/5 mb-4">
+                    <i data-lucide="search" class="w-8 h-8 text-zinc-600"></i>
+                </div>
+                <h3 class="text-xl font-medium text-zinc-400">No games found</h3>
+                <p class="text-zinc-600 mt-2">Try adjusting your search query.</p>
+            </div>
+        </div>
+
+        <!-- Player View -->
+        <div id="player-view" class="hidden flex flex-col gap-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 id="game-title" class="text-3xl font-bold">Game Title</h2>
+                    <p class="text-zinc-500 flex items-center gap-2 mt-1">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        Now Playing
+                    </p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="external-btn" class="p-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-colors text-zinc-400 hover:text-white" title="Open in new tab">
+                        <i data-lucide="external-link" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="relative w-full aspect-video bg-black rounded-2xl border border-white/10 overflow-hidden shadow-2xl">
+                <iframe id="game-iframe" src="" class="w-full h-full border-none" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"></iframe>
+            </div>
+
+            <div class="bg-zinc-900/50 rounded-2xl border border-white/5 p-6">
+                <h4 class="font-semibold mb-4 flex items-center gap-2">
+                    <i data-lucide="maximize-2" class="w-4 h-4 text-emerald-500"></i>
+                    Game Controls
+                </h4>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div class="p-3 rounded-xl bg-white/5 border border-white/5">
+                        <p class="text-xs text-zinc-500 uppercase font-bold tracking-wider mb-1">Movement</p>
+                        <p class="text-sm">WASD / Arrows</p>
+                    </div>
+                    <div class="p-3 rounded-xl bg-white/5 border border-white/5">
+                        <p class="text-xs text-zinc-500 uppercase font-bold tracking-wider mb-1">Action</p>
+                        <p class="text-sm">Space / Mouse</p>
+                    </div>
+                    <div class="p-3 rounded-xl bg-white/5 border border-white/5">
+                        <p class="text-xs text-zinc-500 uppercase font-bold tracking-wider mb-1">Pause</p>
+                        <p class="text-sm">Esc / P</p>
+                    </div>
+                    <div class="p-3 rounded-xl bg-white/5 border border-white/5">
+                        <p class="text-xs text-zinc-500 uppercase font-bold tracking-wider mb-1">Fullscreen</p>
+                        <p class="text-sm">F</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="border-t border-white/5 py-12 mt-20">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-2 opacity-50">
+                <i data-lucide="gamepad-2" class="w-5 h-5"></i>
+                <span class="font-bold tracking-tight">Nexus Games</span>
+            </div>
+            <p class="text-zinc-600 text-sm">
+                © <span id="year"></span> Nexus Games. All rights reserved.
+            </p>
+            <div class="flex items-center gap-6 text-sm text-zinc-600">
+                <a href="#" class="hover:text-emerald-500 transition-colors">Terms</a>
+                <a href="#" class="hover:text-emerald-500 transition-colors">Privacy</a>
+                <a href="#" class="hover:text-emerald-500 transition-colors">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        // Game Data
+        const games = [
+            { id: "2048", title: "2048", thumbnail: "https://picsum.photos/seed/2048/400/300", iframeUrl: "https://play2048.co/" },
+            { id: "hextris", title: "Hextris", thumbnail: "https://picsum.photos/seed/hextris/400/300", iframeUrl: "https://hextris.io/" },
+            { id: "flappybird", title: "Flappy Bird", thumbnail: "https://picsum.photos/seed/flappy/400/300", iframeUrl: "https://flappybird.io/" },
+            { id: "tetris", title: "Tetris", thumbnail: "https://picsum.photos/seed/tetris/400/300", iframeUrl: "https://tetris.com/play-tetris" },
+            { id: "paperio", title: "Paper.io 2", thumbnail: "https://picsum.photos/seed/paperio/400/300", iframeUrl: "https://paper-io.com/" },
+            { id: "slope", title: "Slope", thumbnail: "https://picsum.photos/seed/slope/400/300", iframeUrl: "https://slopegame.online/" }
+        ];
+
+        // DOM Elements
+        const gamesGrid = document.getElementById('games-grid');
+        const libraryView = document.getElementById('library-view');
+        const playerView = document.getElementById('player-view');
+        const searchContainer = document.getElementById('search-container');
+        const backBtn = document.getElementById('back-btn');
+        const searchInput = document.getElementById('search-input');
+        const noResults = document.getElementById('no-results');
+        const gameTitle = document.getElementById('game-title');
+        const gameIframe = document.getElementById('game-iframe');
+        const externalBtn = document.getElementById('external-btn');
+        const logo = document.getElementById('logo');
+        const yearSpan = document.getElementById('year');
+
+        yearSpan.textContent = new Date().getFullYear();
+
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Render Games
+        function renderGames(filteredGames) {
+            gamesGrid.innerHTML = '';
+            if (filteredGames.length === 0) {
+                noResults.classList.remove('hidden');
+            } else {
+                noResults.classList.add('hidden');
+                filteredGames.forEach(game => {
+                    const card = document.createElement('div');
+                    card.className = 'game-card group relative bg-zinc-900/50 rounded-2xl border border-white/5 overflow-hidden cursor-pointer hover:border-emerald-500/30 transition-all';
+                    card.innerHTML = `
+                        <div class="aspect-video relative overflow-hidden">
+                            <img src="${game.thumbnail}" alt="${game.title}" class="w-full h-full object-cover transition-transform duration-500" referrerpolicy="no-referrer">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity"></div>
+                            <div class="play-overlay absolute inset-0 flex items-center justify-center opacity-0 transition-opacity">
+                                <div class="w-12 h-12 rounded-full bg-emerald-500 flex items-center justify-center shadow-lg transform scale-90 group-hover:scale-100 transition-transform">
+                                    <i data-lucide="gamepad-2" class="w-6 h-6 text-black"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="font-semibold text-lg transition-colors">${game.title}</h3>
+                            <div class="mt-2 flex items-center gap-2">
+                                <span class="text-xs px-2 py-1 rounded bg-white/5 text-zinc-500 uppercase tracking-wider font-bold">Web Game</span>
+                            </div>
+                        </div>
+                    `;
+                    card.onclick = () => selectGame(game);
+                    gamesGrid.appendChild(card);
+                });
+                lucide.createIcons();
+            }
+        }
+
+        function selectGame(game) {
+            libraryView.classList.add('hidden');
+            searchContainer.classList.add('hidden');
+            playerView.classList.remove('hidden');
+            backBtn.classList.remove('hidden');
+            
+            gameTitle.textContent = game.title;
+            gameIframe.src = game.iframeUrl;
+            externalBtn.onclick = () => window.open(game.iframeUrl, '_blank');
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showLibrary() {
+            libraryView.classList.remove('hidden');
+            searchContainer.classList.remove('hidden');
+            playerView.classList.add('hidden');
+            backBtn.classList.add('hidden');
+            gameIframe.src = '';
+        }
+
+        // Event Listeners
+        searchInput.oninput = (e) => {
+            const query = e.target.value.toLowerCase();
+            const filtered = games.filter(g => g.title.toLowerCase().includes(query));
+            renderGames(filtered);
+        };
+
+        backBtn.onclick = showLibrary;
+        logo.onclick = showLibrary;
+
+        // Initial Render
+        renderGames(games);
+    </script>
+</body>
+</html>
